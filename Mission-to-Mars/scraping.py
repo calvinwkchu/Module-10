@@ -4,13 +4,12 @@
 #Import Splinter, BeautifulSoup, ChromeDrive & Pandas
 from splinter import Browser
 from bs4 import BeautifulSoup as soup
-from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 import datetime as dt
 
 def scrape_all():
     # Initiate headless driver for deployment
-    browser = Browser("chrome", executable_path="ChromeDriverManager().install()", headless=True)
+    browser = Browser("chrome", executable_path='chromedriver', headless=True)
     news_title, news_paragraph = mars_news(browser)
 
     # Run all scraping functions and store results in dictionary
@@ -23,13 +22,13 @@ def scrape_all():
     }
 
    # Stop webdriver and return data
-   browser.quit()
-   return data    
+    browser.quit()
+    return data    
 
 
 # Setup splinter
-executable_path = {'executable_path': 'ChromeDriverManager().install()'}
-browser = Browser('chrome', **executable_path, headless=False)
+# executable_path = {'executable_path': 'chromedriver'}
+# browser = Browser('chrome', **executable_path, headless=False)
 
 def mars_news(browser):
 
@@ -60,7 +59,7 @@ def mars_news(browser):
 
 # ### Featured Images
 
-def featured_image(browser)
+def featured_image(browser):
     # Visit URL
     url2 = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
     browser.visit(url2)
@@ -96,20 +95,22 @@ def featured_image(browser)
 
 # ## Mars Facts
 
-def mars_facts()
+def mars_facts():
+    # Add try/except for error handling
+    try:
+        # Use 'read_html' to scrape the facts table into a dataframe
+        df = pd.read_html('http://space-facts.com/mars/')[0]
 
-   try:
-      # use 'read_html" to scrape the facts table into a dataframe
-      df = pd.read_html('http://space-facts.com/mars/')[0]
-   except BaseException:
-      return None
+    except BaseException:
+        return None
 
-    # Assign column and set index of dataframe
-    df.columns=['description', 'value']
-    df.set_index('description', inplace=True)
-    
+    # Assign columns and set index of dataframe
+    df.columns=['Description', 'Mars']
+    df.set_index('Description', inplace=True)
 
+    # Convert dataframe into HTML format, add bootstrap
     return df.to_html()
+
 
 if __name__ == "__main__":
     # If running as script, print scraped data
